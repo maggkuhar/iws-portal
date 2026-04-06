@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}IWS — Interview with Subconscious{% endblock %}</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Arial', sans-serif; background: #faf9f7; color: #1a1a1a; }
+
+        /* Шапка */
+        .header { background: #1a0a2e; color: #fff; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 22px; font-weight: bold; letter-spacing: 2px; color: #fff; text-decoration: none; }
+        .logo span { color: #c084fc; }
+        .nav-links { display: flex; gap: 28px; align-items: center; }
+        .nav-links a { color: #ccc; text-decoration: none; font-size: 14px; transition: color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; }
+        .header-actions { display: flex; align-items: center; gap: 16px; }
+        .cart-btn { position: relative; color: #ccc; text-decoration: none; font-size: 20px; }
+        .cart-count { position: absolute; top: -6px; right: -8px; background: #c084fc; color: #fff; font-size: 10px; font-weight: bold; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; }
+        .btn-login { padding: 7px 18px; border: 1px solid #c084fc; border-radius: 20px; color: #c084fc; text-decoration: none; font-size: 13px; transition: all 0.2s; }
+        .btn-login:hover { background: #c084fc; color: #fff; }
+        .btn-cabinet { padding: 7px 18px; background: #c084fc; border-radius: 20px; color: #fff; text-decoration: none; font-size: 13px; }
+
+        /* Контент */
+        .content { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+
+        /* Кнопки */
+        .btn { display: inline-block; padding: 12px 28px; border-radius: 8px; font-size: 15px; font-weight: bold; text-decoration: none; border: none; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background: #7c3aed; color: #fff; }
+        .btn-primary:hover { background: #6d28d9; }
+        .btn-outline { border: 2px solid #7c3aed; color: #7c3aed; background: transparent; }
+        .btn-outline:hover { background: #7c3aed; color: #fff; }
+        .btn-sm { padding: 7px 16px; font-size: 13px; border-radius: 6px; }
+
+        /* Флеш сообщения */
+        .flash { padding: 12px 20px; margin: 16px 0; border-radius: 8px; font-size: 14px; }
+        .flash-error { background: #fde; color: #c0392b; }
+        .flash-success { background: #d4edda; color: #155724; }
+
+        /* Подвал */
+        .footer { background: #1a0a2e; color: #888; padding: 32px; text-align: center; font-size: 13px; margin-top: 60px; }
+        .footer a { color: #c084fc; text-decoration: none; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<header class="header">
+    <a href="/" class="logo">IW<span>S</span></a>
+    <nav class="nav-links">
+        <a href="/shop" {% if active_page == 'shop' %}class="active"{% endif %}>Магазин</a>
+        <a href="/events" {% if active_page == 'events' %}class="active"{% endif %}>Мероприятия</a>
+        <a href="/community" {% if active_page == 'community' %}class="active"{% endif %}>Сообщество</a>
+        <a href="/about" {% if active_page == 'about' %}class="active"{% endif %}>О методе</a>
+    </nav>
+    <div class="header-actions">
+        <a href="/cart" class="cart-btn">🛒
+            {% set cart_count = session.get('cart', {}).values()|list|sum %}
+            {% if cart_count > 0 %}<span class="cart-count">{{ cart_count }}</span>{% endif %}
+        </a>
+        {% if user %}
+            <a href="/cabinet" class="btn-cabinet">{{ user.name or 'Кабинет' }}</a>
+        {% else %}
+            <a href="/login" class="btn-login">Войти</a>
+        {% endif %}
+    </div>
+</header>
+
+<div class="content">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+            <div class="flash flash-error">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+</div>
+
+<footer class="footer">
+    <p>© 2024 IWS — Interview with Subconscious. Все права защищены.</p>
+    <p style="margin-top:8px;"><a href="/about">О методе</a> · <a href="/shop">Магазин</a> · <a href="/events">Мероприятия</a></p>
+</footer>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>
