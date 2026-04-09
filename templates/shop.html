@@ -1,0 +1,61 @@
+{% extends '_base.html' %}
+{% block title %}Магазин — IWS{% endblock %}
+{% set active_page = 'shop' %}
+{% block content %}
+
+<h1 style="font-size:30px;font-weight:bold;margin-bottom:8px;">Магазин <span style="color:#7c3aed;">IWS</span></h1>
+<p style="color:#888;margin-bottom:32px;">Дневники, карты, книги и мерч</p>
+
+<!-- Категории -->
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px;">
+    <a href="/shop" class="btn btn-sm {% if not active_category %}btn-primary{% else %}btn-outline{% endif %}">Все</a>
+    {% for cat in categories %}
+    <a href="/shop?category={{ cat.slug }}" class="btn btn-sm {% if active_category == cat.slug %}btn-primary{% else %}btn-outline{% endif %}">{{ cat.name }}</a>
+    {% endfor %}
+</div>
+
+<!-- Товары -->
+{% if products %}
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:24px;">
+    {% for p in products %}
+    <div style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.07);">
+        <a href="/shop/{{ p.slug }}" style="text-decoration:none;color:inherit;">
+            {% if p.image %}
+            <img src="/static/images/{{ p.image }}" style="width:100%;height:200px;object-fit:cover;">
+            {% else %}
+            <div style="height:200px;background:linear-gradient(135deg,#2d1254,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:52px;">📔</div>
+            {% endif %}
+            <div style="padding:16px;">
+                <div style="font-size:11px;color:#c084fc;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">{{ p.cat_name }}</div>
+                <div style="font-size:15px;font-weight:bold;margin-bottom:6px;">{{ p.name }}</div>
+                <div style="font-size:19px;color:#7c3aed;font-weight:bold;">{{ "%.0f"|format(p.price) }} ₽</div>
+            </div>
+        </a>
+        <div style="padding:0 16px 16px;">
+            <button onclick="addToCart({{ p.id }})" class="btn btn-primary btn-sm" style="width:100%;">В корзину</button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div style="text-align:center;padding:60px;color:#aaa;">
+    <div style="font-size:48px;margin-bottom:16px;">📦</div>
+    <div>Товаров пока нет</div>
+</div>
+{% endif %}
+
+{% endblock %}
+{% block extra_js %}
+<script>
+function addToCart(id) {
+    fetch('/cart/add', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'product_id='+id+'&quantity=1'})
+    .then(r=>r.json()).then(d=>{
+        if(d.ok) {
+            const cnt = document.querySelector('.cart-count');
+            if(cnt) cnt.textContent = d.count;
+            else { const btn = document.querySelector('.cart-btn'); btn.innerHTML += '<span class="cart-count">'+d.count+'</span>'; }
+        }
+    });
+}
+</script>
+{% endblock %}

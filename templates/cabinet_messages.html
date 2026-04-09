@@ -1,0 +1,197 @@
+{% extends '_base.html' %}
+{% block title %}Сообщения — IWS{% endblock %}
+{% block extra_css %}
+<style>
+.msg-layout { display: grid; grid-template-columns: 300px 1fr; gap: 0; height: calc(100vh - 200px); min-height: 500px; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+.msg-sidebar { border-right: 1px solid #f0f0f0; display: flex; flex-direction: column; }
+.msg-sidebar-header { padding: 16px 20px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+.msg-list { overflow-y: auto; flex: 1; }
+.msg-dialog-item { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid #fafafa; text-decoration: none; color: inherit; transition: background 0.15s; cursor: pointer; }
+.msg-dialog-item:hover { background: #faf7ff; }
+.msg-dialog-item.active { background: #f3e8ff; }
+.msg-chat { display: flex; flex-direction: column; }
+.msg-chat-header { padding: 16px 20px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 12px; }
+.msg-chat-body { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+.msg-chat-footer { padding: 14px 20px; border-top: 1px solid #f0f0f0; display: flex; gap: 10px; }
+.msg-bubble { max-width: 68%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.5; }
+.msg-bubble.out { background: #7c3aed; color: #fff; border-radius: 16px 16px 4px 16px; align-self: flex-end; }
+.msg-bubble.in { background: #f3e8ff; color: #1a1a1a; border-radius: 16px 16px 16px 4px; align-self: flex-start; }
+.msg-time { font-size: 11px; opacity: 0.65; margin-top: 3px; text-align: right; }
+</style>
+{% endblock %}
+{% block content %}
+
+<div style="display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:start;">
+
+    <!-- Боковое меню кабинета -->
+    <div>
+        <div style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.07);">
+            <a href="/cabinet" style="display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;text-decoration:none;color:#1a1a1a;border-bottom:1px solid #f5f5f5;">
+                <span>🛍️</span> Мои заказы
+            </a>
+            <a href="/cabinet/messages" style="display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;text-decoration:none;color:#1a1a1a;border-bottom:1px solid #f5f5f5;background:#f3e8ff;font-weight:bold;justify-content:space-between;">
+                <span style="display:flex;align-items:center;gap:10px;"><span>💬</span> Сообщения</span>
+                {% if unread_count > 0 %}<span style="background:#7c3aed;color:#fff;border-radius:20px;padding:2px 8px;font-size:11px;font-weight:bold;">{{ unread_count }}</span>{% endif %}
+            </a>
+            <a href="/community" style="display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;text-decoration:none;color:#1a1a1a;border-bottom:1px solid #f5f5f5;">
+                <span>📰</span> Лента
+            </a>
+            <a href="/profile/{{ user.id }}" style="display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;text-decoration:none;color:#1a1a1a;border-bottom:1px solid #f5f5f5;">
+                <span>👤</span> Мой профиль
+            </a>
+            <a href="/cabinet/profile" style="display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;text-decoration:none;color:#1a1a1a;border-bottom:1px solid #f5f5f5;">
+                <span>⚙️</span> Настройки
+            </a>
+            <a href="/logout" style="display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;text-decoration:none;color:#aaa;">
+                <span>🚪</span> Выйти
+            </a>
+        </div>
+    </div>
+
+    <!-- Двухколоночный чат -->
+    <div class="msg-layout">
+
+        <!-- Левая колонка: список диалогов -->
+        <div class="msg-sidebar">
+            <div class="msg-sidebar-header">
+                <span style="font-weight:bold;font-size:15px;">Диалоги</span>
+                <a href="/members" class="btn btn-primary btn-sm">+ Новый</a>
+            </div>
+            <div class="msg-list">
+                {% if dialogs %}
+                    {% for d in dialogs %}
+                    <a href="/cabinet/messages/{{ d.id }}" class="msg-dialog-item {% if to_id == d.id %}active{% endif %}">
+                        <div style="width:42px;height:42px;border-radius:50%;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,#2d1254,#7c3aed);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:17px;">
+                            {% if d.avatar %}<img src="/static/images/avatars/{{ d.avatar }}" style="width:100%;height:100%;object-fit:cover;">{% else %}{{ d.name[0]|upper if d.name else '?' }}{% endif %}
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+                                <div style="font-size:14px;font-weight:{% if d.unread > 0 %}bold{% else %}normal{% endif %};">{{ d.name }}</div>
+                                {% if d.last_time %}<div style="font-size:10px;color:#bbb;flex-shrink:0;margin-left:4px;">{{ d.last_time[11:16] }}</div>{% endif %}
+                            </div>
+                            <div style="font-size:12px;color:#aaa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;">{{ d.last_msg or '—' }}</div>
+                        </div>
+                        {% if d.unread > 0 %}
+                        <div style="background:#7c3aed;color:#fff;border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;flex-shrink:0;">{{ d.unread }}</div>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                {% else %}
+                <div style="padding:32px;text-align:center;color:#aaa;font-size:13px;">
+                    Нет диалогов.<br>
+                    <a href="/members" style="color:#7c3aed;">Найти участника →</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Правая колонка: чат -->
+        <div class="msg-chat">
+            {% if interlocutor %}
+            <!-- Шапка чата -->
+            <div class="msg-chat-header">
+                <a href="/profile/{{ interlocutor.id }}" style="text-decoration:none;display:flex;align-items:center;gap:12px;">
+                    <div style="width:42px;height:42px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,#2d1254,#7c3aed);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:17px;">
+                        {% if interlocutor.avatar %}<img src="/static/images/avatars/{{ interlocutor.avatar }}" style="width:100%;height:100%;object-fit:cover;">{% else %}{{ interlocutor.name[0]|upper if interlocutor.name else '?' }}{% endif %}
+                    </div>
+                    <div>
+                        <div style="font-weight:bold;font-size:15px;color:#1a1a1a;">{{ interlocutor.name }}</div>
+                        <div style="font-size:12px;color:#aaa;">{{ role_name(interlocutor.role) }}</div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Сообщения -->
+            <div class="msg-chat-body" id="chat-body">
+                {% if chat_msgs %}
+                    {% for m in chat_msgs %}
+                    {% set is_out = m.from_user_id == user.id %}
+                    <div style="display:flex;flex-direction:column;align-items:{% if is_out %}flex-end{% else %}flex-start{% endif %};">
+                        <div class="msg-bubble {% if is_out %}out{% else %}in{% endif %}">
+                            {% if m.content %}<div>{{ m.content }}</div>{% endif %}
+                            {% if m.attachment %}
+                                {% if m.attachment_type == 'image' %}
+                                <a href="/static/uploads/messages/{{ m.attachment }}" target="_blank">
+                                    <img src="/static/uploads/messages/{{ m.attachment }}" style="max-width:240px;max-height:200px;border-radius:8px;display:block;margin-top:{% if m.content %}6px{% else %}0{% endif %};">
+                                </a>
+                                {% elif m.attachment_type == 'video' %}
+                                <video controls style="max-width:260px;border-radius:8px;display:block;margin-top:{% if m.content %}6px{% else %}0{% endif %};">
+                                    <source src="/static/uploads/messages/{{ m.attachment }}">
+                                </video>
+                                {% else %}
+                                <a href="/static/uploads/messages/{{ m.attachment }}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;margin-top:{% if m.content %}6px{% else %}0{% endif %};padding:6px 10px;background:rgba(255,255,255,0.15);border-radius:8px;color:inherit;text-decoration:none;font-size:13px;">
+                                    📄 {{ m.attachment }}
+                                </a>
+                                {% endif %}
+                            {% endif %}
+                            <div class="msg-time">{{ m.created_at[11:16] }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div style="text-align:center;color:#aaa;font-size:13px;margin:auto;">Начните диалог</div>
+                {% endif %}
+            </div>
+
+            <!-- Поле ввода -->
+            <form method="post" action="/cabinet/messages/{{ interlocutor.id }}" class="msg-chat-footer" enctype="multipart/form-data" id="msg-form">
+                <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+                    <div id="attach-preview" style="display:none;padding:6px 10px;background:#f3e8ff;border-radius:10px;font-size:12px;color:#7c3aed;display:flex;align-items:center;gap:8px;">
+                        <span id="attach-name"></span>
+                        <span onclick="clearAttach()" style="cursor:pointer;color:#aaa;">✕</span>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <label title="Прикрепить файл" style="cursor:pointer;font-size:20px;color:#aaa;flex-shrink:0;line-height:1;">
+                            📎
+                            <input type="file" name="attachment" id="attach-input" accept="image/*,video/*,.pdf,.doc,.docx,.zip" style="display:none;" onchange="showAttach(this)">
+                        </label>
+                        <input type="text" name="content" id="msg-input" placeholder="Сообщение..." autofocus
+                            style="flex:1;padding:11px 16px;border:2px solid #e5e7eb;border-radius:24px;font-size:14px;outline:none;"
+                            onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#e5e7eb'">
+                        <button type="submit" class="btn btn-primary" style="border-radius:24px;padding:11px 22px;flex-shrink:0;">→</button>
+                    </div>
+                </div>
+            </form>
+
+            {% else %}
+            <!-- Пустое состояние -->
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:#aaa;">
+                <div style="font-size:52px;margin-bottom:16px;">💬</div>
+                <div style="font-size:16px;font-weight:bold;color:#666;margin-bottom:8px;">Выберите диалог</div>
+                <div style="font-size:13px;margin-bottom:20px;">или начните новый</div>
+                <a href="/members" class="btn btn-primary btn-sm">Найти участника</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block extra_js %}
+<script>
+const body = document.getElementById('chat-body');
+if (body) body.scrollTop = body.scrollHeight;
+
+function showAttach(input) {
+    if (!input.files || !input.files[0]) return;
+    const f = input.files[0];
+    if (f.size > 50 * 1024 * 1024) {
+        alert('Файл слишком большой. Максимум 50 МБ.');
+        input.value = '';
+        return;
+    }
+    const preview = document.getElementById('attach-preview');
+    const name = document.getElementById('attach-name');
+    name.textContent = f.name;
+    preview.style.display = 'flex';
+    // Снимаем required с текстового поля
+    document.getElementById('msg-input').removeAttribute('required');
+}
+
+function clearAttach() {
+    document.getElementById('attach-input').value = '';
+    document.getElementById('attach-preview').style.display = 'none';
+    document.getElementById('attach-name').textContent = '';
+}
+</script>
+{% endblock %}

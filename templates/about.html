@@ -1,0 +1,63 @@
+{% extends '_base.html' %}
+{% block title %}О методе — IWS{% endblock %}
+{% set active_page = 'about' %}
+{% block content %}
+
+<div style="max-width:760px;margin:0 auto;">
+    <div style="font-size:12px;letter-spacing:3px;text-transform:uppercase;color:#c084fc;margin-bottom:12px;">О методе</div>
+    <h1 style="font-size:36px;font-weight:bold;margin-bottom:24px;">Interview with <span style="color:#7c3aed;">Subconscious</span></h1>
+
+    <p style="font-size:17px;line-height:1.8;color:#333;margin-bottom:24px;">
+        IWS — это авторский метод самопознания, основанный на диалоге с собственным подсознанием через систему специально разработанных вопросов, упражнений и практик.
+    </p>
+
+    <div style="background:linear-gradient(135deg,#1a0a2e,#2d1254);color:#fff;border-radius:16px;padding:32px;margin-bottom:32px;">
+        <h2 style="font-size:22px;margin-bottom:16px;">Продукты бренда</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div>
+                <div style="color:#c084fc;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Онлайн</div>
+                <ul style="list-style:none;font-size:14px;line-height:2;">
+                    <li>📱 @iwsgamebot — игра ИСП</li>
+                    <li>📔 @iwsdiarybot — дневник 365 дней</li>
+                    <li>📲 Мобильное приложение (в планах)</li>
+                </ul>
+            </div>
+            <div>
+                <div style="color:#c084fc;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Офлайн</div>
+                <ul style="list-style:none;font-size:14px;line-height:2;">
+                    <li>📓 Умный дневник 365 дней</li>
+                    <li>🃏 Колода МАК карт (80 шт)</li>
+                    <li>📖 Книга "Кабинет непсихолога"</li>
+                    <li>🎲 Настольная игра ИСП</li>
+                    <li>👕 Мерч</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <h2 style="font-size:22px;font-weight:bold;margin-bottom:16px;">Как это работает?</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:32px;">
+        <div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06);text-align:center;">
+            <div style="font-size:36px;margin-bottom:12px;">🎯</div>
+            <div style="font-weight:bold;margin-bottom:8px;">Вопросы</div>
+            <div style="font-size:13px;color:#666;">Специально разработанные вопросы-ключи открывают доступ к подсознанию</div>
+        </div>
+        <div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06);text-align:center;">
+            <div style="font-size:36px;margin-bottom:12px;">💡</div>
+            <div style="font-weight:bold;margin-bottom:8px;">Осознание</div>
+            <div style="font-size:13px;color:#666;">Ответы помогают увидеть скрытые убеждения и паттерны поведения</div>
+        </div>
+        <div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06);text-align:center;">
+            <div style="font-size:36px;margin-bottom:12px;">🌱</div>
+            <div style="font-weight:bold;margin-bottom:8px;">Трансформация</div>
+            <div style="font-size:13px;color:#666;">Регулярная практика ведёт к глубоким изменениям в жизни</div>
+        </div>
+    </div>
+
+    <div style="text-align:center;">
+        <a href="/shop" class="btn btn-primary" style="margin-right:12px;">Перейти в магазин</a>
+        <a href="/events" class="btn btn-outline">Найти мероприятие</a>
+    </div>
+</div>
+
+{% endblock %}

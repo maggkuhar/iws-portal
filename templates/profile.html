@@ -1,0 +1,85 @@
+{% extends '_base.html' %}
+{% block title %}{{ member.name }} — IWS{% endblock %}
+{% block content %}
+
+<div style="display:grid;grid-template-columns:280px 1fr;gap:32px;align-items:start;">
+    <!-- Профиль -->
+    <div>
+        <div style="background:#fff;border-radius:16px;padding:28px;box-shadow:0 2px 12px rgba(0,0,0,0.07);text-align:center;margin-bottom:16px;">
+            <div style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#2d1254,#7c3aed);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:36px;color:#fff;font-weight:bold;">
+                {{ member.name[0]|upper if member.name else '?' }}
+            </div>
+            <div style="font-size:20px;font-weight:bold;margin-bottom:6px;">{{ member.name }}</div>
+            {% if member.city %}<div style="font-size:13px;color:#888;margin-bottom:8px;">📍 {{ member.city }}</div>{% endif %}
+            <div style="display:inline-block;padding:4px 14px;border-radius:20px;font-size:13px;font-weight:bold;color:#fff;background:{{ role_color(member.role) }};margin-bottom:16px;">
+                {{ role_name(member.role) }}
+            </div>
+
+            <!-- Опыт -->
+            <div style="margin-bottom:16px;">
+                <div style="font-size:12px;color:#888;margin-bottom:4px;">Опыт: {{ member.experience }} XP</div>
+                <div style="background:#f3e8ff;border-radius:20px;height:8px;overflow:hidden;">
+                    <div style="background:linear-gradient(90deg,#7c3aed,#c084fc);height:100%;width:{{ [member.experience % 100, 100]|min }}%;"></div>
+                </div>
+            </div>
+
+            <div style="display:flex;justify-content:center;gap:24px;font-size:13px;margin-bottom:20px;">
+                <div style="text-align:center;"><div style="font-weight:bold;font-size:18px;">{{ followers }}</div><div style="color:#888;">подписчики</div></div>
+                <div style="text-align:center;"><div style="font-weight:bold;font-size:18px;">{{ following }}</div><div style="color:#888;">подписки</div></div>
+                <div style="text-align:center;"><div style="font-weight:bold;font-size:18px;">{{ posts|length }}</div><div style="color:#888;">посты</div></div>
+            </div>
+
+            {% if user and user.id != member.id %}
+            <div style="display:flex;flex-direction:column;gap:8px;">
+                <a href="/cabinet/messages/{{ member.id }}" class="btn btn-primary btn-sm" style="width:100%;text-align:center;">💬 Написать</a>
+                <form method="post" action="/profile/{{ member.id }}/follow">
+                    <button type="submit" class="btn {% if is_following %}btn-outline{% else %}btn-outline{% endif %} btn-sm" style="width:100%;">
+                        {% if is_following %}Отписаться{% else %}Подписаться{% endif %}
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if member.bio %}
+        <div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.07);margin-bottom:16px;font-size:14px;color:#444;line-height:1.6;">
+            {{ member.bio }}
+        </div>
+        {% endif %}
+
+        {% if achievements %}
+        <div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.07);">
+            <div style="font-size:13px;font-weight:bold;margin-bottom:12px;color:#888;text-transform:uppercase;letter-spacing:1px;">Достижения</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                {% for a in achievements %}
+                <div title="{{ a.name }}: {{ a.description }}" style="background:#f3e8ff;border-radius:8px;padding:6px 10px;font-size:18px;cursor:default;">{{ a.icon }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Посты -->
+    <div>
+        <h2 style="font-size:22px;font-weight:bold;margin-bottom:20px;">Публикации</h2>
+        {% if posts %}
+        <div style="display:grid;gap:16px;">
+            {% for p in posts %}
+            <div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.07);">
+                <div style="font-size:12px;color:#aaa;margin-bottom:10px;">{{ p.created_at[:16] }}</div>
+                <div style="font-size:15px;line-height:1.7;color:#333;">{{ p.content }}</div>
+                <div style="margin-top:12px;display:flex;gap:16px;align-items:center;">
+                    <form method="post" action="/post/{{ p.id }}/like" style="display:inline;">
+                        <button type="submit" style="background:none;border:none;cursor:pointer;font-size:14px;color:#888;">❤️ {{ p.likes }}</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align:center;padding:40px;color:#aaa;">Публикаций пока нет</div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

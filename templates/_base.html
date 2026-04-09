@@ -52,15 +52,26 @@
         <a href="/shop" {% if active_page == 'shop' %}class="active"{% endif %}>Магазин</a>
         <a href="/events" {% if active_page == 'events' %}class="active"{% endif %}>Мероприятия</a>
         <a href="/community" {% if active_page == 'community' %}class="active"{% endif %}>Сообщество</a>
+        <a href="/groups" {% if active_page == 'groups' %}class="active"{% endif %}>Группы</a>
+        <a href="/members" {% if active_page == 'members' %}class="active"{% endif %}>Участники</a>
+        <a href="/publishing" {% if active_page == 'publishing' %}class="active"{% endif %}>Издательство</a>
         <a href="/about" {% if active_page == 'about' %}class="active"{% endif %}>О методе</a>
     </nav>
     <div class="header-actions">
-        <a href="/cart" class="cart-btn">🛒
+        <a href="/cart" class="cart-btn" title="Корзина">🛒
             {% set cart_count = session.get('cart', {}).values()|list|sum %}
             {% if cart_count > 0 %}<span class="cart-count">{{ cart_count }}</span>{% endif %}
         </a>
         {% if user %}
-            <a href="/cabinet" class="btn-cabinet">{{ user.name or 'Кабинет' }}</a>
+        <a href="/cabinet/messages" class="cart-btn" title="Сообщения" style="font-size:20px;">💬
+            {% if unread_count > 0 %}<span class="cart-count">{{ unread_count }}</span>{% endif %}
+        </a>
+        <a href="/cabinet" style="display:flex;align-items:center;gap:8px;text-decoration:none;">
+            <div style="width:36px;height:36px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,#2d1254,#c084fc);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:15px;">
+                {% if user.avatar %}<img src="/static/images/avatars/{{ user.avatar }}" style="width:100%;height:100%;object-fit:cover;">{% else %}{{ user.name[0]|upper if user.name else '?' }}{% endif %}
+            </div>
+            <span style="color:#fff;font-size:14px;display:none;" class="username-label">{{ user.name }}</span>
+        </a>
         {% else %}
             <a href="/login" class="btn-login">Войти</a>
         {% endif %}
