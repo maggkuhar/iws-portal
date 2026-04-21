@@ -1,0 +1,44 @@
+{% extends '_base.html' %}
+{% block title %}{{ interlocutor.name }} — IWS{% endblock %}
+{% block content %}
+
+<div style="max-width:680px;margin:0 auto;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+        <a href="/messages" style="color:#7c3aed;font-size:20px;text-decoration:none;">←</a>
+        <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#2d1254,#7c3aed);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;">
+            {{ interlocutor.name[0]|upper }}
+        </div>
+        <div style="font-size:18px;font-weight:bold;">{{ interlocutor.name }}</div>
+    </div>
+
+    <!-- Сообщения -->
+    <div id="messages-list" style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.07);min-height:300px;max-height:480px;overflow-y:auto;margin-bottom:16px;display:flex;flex-direction:column;gap:10px;">
+        {% if messages %}
+            {% for m in messages %}
+            <div style="display:flex;{% if m.from_user_id == user.id %}justify-content:flex-end{% endif %};">
+                <div style="max-width:70%;padding:10px 16px;border-radius:{% if m.from_user_id == user.id %}16px 16px 4px 16px;background:#7c3aed;color:#fff{% else %}16px 16px 16px 4px;background:#f3e8ff;color:#1a1a1a{% endif %};">
+                    <div style="font-size:15px;line-height:1.5;">{{ m.content }}</div>
+                    <div style="font-size:11px;opacity:0.7;margin-top:4px;text-align:right;">{{ m.created_at[11:16] }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align:center;color:#aaa;padding:40px;">Начните диалог</div>
+        {% endif %}
+    </div>
+
+    <!-- Форма отправки -->
+    <form method="post" style="display:flex;gap:10px;">
+        <input type="text" name="content" placeholder="Сообщение..." required autofocus style="flex:1;padding:13px 16px;border:2px solid #e5e7eb;border-radius:12px;font-size:15px;outline:none;" onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#e5e7eb'">
+        <button type="submit" class="btn btn-primary" style="border-radius:12px;">Отправить</button>
+    </form>
+</div>
+
+{% endblock %}
+{% block extra_js %}
+<script>
+// Скроллим вниз при загрузке
+const list = document.getElementById('messages-list');
+list.scrollTop = list.scrollHeight;
+</script>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends '_base.html' %}
+{% block title %}Настройки — IWS{% endblock %}
+{% block content %}
+
+<div style="display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:start;">
+
+    <!-- Боковое меню -->
+    <div style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.07);">
+        <a href="/cabinet" style="display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;text-decoration:none;color:#1a1a1a;border-bottom:1px solid #f5f5f5;">
+            <span>🛍️</span> Мои заказы
+        </a>
+        <a href="/cabinet/messages" style="display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;text-decoration:none;color:#1a1a1a;border-bottom:1px solid #f5f5f5;">
+            <span>💬</span> Сообщения
+        </a>
+        <a href="/community" style="display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;text-decoration:none;color:#1a1a1a;border-bottom:1px solid #f5f5f5;">
+            <span>📰</span> Лента
+        </a>
+        <a href="/profile/{{ user.id }}" style="display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;text-decoration:none;color:#1a1a1a;border-bottom:1px solid #f5f5f5;">
+            <span>👤</span> Мой профиль
+        </a>
+        <a href="/cabinet/profile" style="display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;text-decoration:none;color:#1a1a1a;border-bottom:1px solid #f5f5f5;background:#f3e8ff;font-weight:bold;">
+            <span>⚙️</span> Настройки
+        </a>
+        <a href="/logout" style="display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;text-decoration:none;color:#aaa;">
+            <span>🚪</span> Выйти
+        </a>
+    </div>
+
+    <!-- Форма -->
+    <div style="background:#fff;border-radius:16px;padding:32px;box-shadow:0 2px 12px rgba(0,0,0,0.07);">
+        <h1 style="font-size:22px;font-weight:bold;margin-bottom:28px;">Настройки <span style="color:#7c3aed;">профиля</span></h1>
+
+        <form method="post" action="/cabinet/profile" enctype="multipart/form-data">
+
+            <!-- Аватар -->
+            <div style="display:flex;align-items:center;gap:24px;margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid #f0f0f0;">
+                <div id="avatar-preview" style="width:88px;height:88px;border-radius:50%;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,#2d1254,#7c3aed);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:32px;">
+                    {% if user.avatar %}
+                    <img src="/static/images/avatars/{{ user.avatar }}" style="width:100%;height:100%;object-fit:cover;" id="avatar-img">
+                    {% else %}
+                    <span id="avatar-letter">{{ user.name[0]|upper if user.name else '?' }}</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <div style="font-size:14px;font-weight:bold;margin-bottom:6px;">Фото профиля</div>
+                    <div style="font-size:12px;color:#aaa;margin-bottom:12px;">JPG, PNG, GIF — до 10 МБ</div>
+                    <label style="cursor:pointer;display:inline-block;">
+                        <input type="file" name="avatar" accept="image/*" style="display:none;" id="avatar-input" onchange="previewAvatar(this)">
+                        <span class="btn btn-outline btn-sm">Загрузить фото</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Поля -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                <div>
+                    <label style="display:block;font-size:13px;color:#666;margin-bottom:6px;">Имя</label>
+                    <input type="text" name="name" value="{{ user.name or '' }}" style="width:100%;padding:11px 14px;border:2px solid #e5e7eb;border-radius:8px;font-size:14px;outline:none;" onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#e5e7eb'">
+                </div>
+                <div>
+                    <label style="display:block;font-size:13px;color:#666;margin-bottom:6px;">Телефон</label>
+                    <input type="tel" name="phone" value="{{ user.phone or '' }}" style="width:100%;padding:11px 14px;border:2px solid #e5e7eb;border-radius:8px;font-size:14px;outline:none;" onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#e5e7eb'">
+                </div>
+            </div>
+            <div style="margin-bottom:16px;">
+                <label style="display:block;font-size:13px;color:#666;margin-bottom:6px;">Email</label>
+                <input type="email" value="{{ user.email }}" disabled style="width:100%;padding:11px 14px;border:2px solid #e5e7eb;border-radius:8px;font-size:14px;background:#f9f9f9;color:#aaa;">
+            </div>
+            <div style="margin-bottom:16px;">
+                <label style="display:block;font-size:13px;color:#666;margin-bottom:6px;">Город</label>
+                <input type="text" name="city" value="{{ user.city or '' }}" style="width:100%;padding:11px 14px;border:2px solid #e5e7eb;border-radius:8px;font-size:14px;outline:none;" onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#e5e7eb'">
+            </div>
+            <div style="margin-bottom:28px;">
+                <label style="display:block;font-size:13px;color:#666;margin-bottom:6px;">О себе</label>
+                <textarea name="bio" rows="4" placeholder="Расскажите о себе..." style="width:100%;padding:11px 14px;border:2px solid #e5e7eb;border-radius:8px;font-size:14px;resize:none;outline:none;" onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#e5e7eb'">{{ user.bio or '' }}</textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+{% block extra_js %}
+<script>
+function previewAvatar(input) {
+    if (!input.files || !input.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        const preview = document.getElementById('avatar-preview');
+        preview.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+</script>
+{% endblock %}

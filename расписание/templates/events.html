@@ -1,0 +1,45 @@
+{% extends '_base.html' %}
+{% block title %}Мероприятия — IWS{% endblock %}
+{% set active_page = 'events' %}
+{% block content %}
+
+<h1 style="font-size:30px;font-weight:bold;margin-bottom:8px;">Мероприятия <span style="color:#7c3aed;">IWS</span></h1>
+<p style="color:#888;margin-bottom:32px;">Офлайн игры и встречи по городам</p>
+
+<!-- Фильтр по городам -->
+{% if cities %}
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px;">
+    <a href="/events" class="btn btn-sm {% if not active_city %}btn-primary{% else %}btn-outline{% endif %}">Все города</a>
+    {% for c in cities %}
+    <a href="/events?city={{ c.id }}" class="btn btn-sm {% if active_city == c.id|string %}btn-primary{% else %}btn-outline{% endif %}">{{ c.name }}</a>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Мероприятия -->
+{% if events %}
+<div style="display:grid;gap:16px;">
+    {% for e in events %}
+    <a href="/events/{{ e.id }}" style="text-decoration:none;display:block;background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.07);display:flex;justify-content:space-between;align-items:center;">
+        <div>
+            <div style="font-size:12px;color:#c084fc;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">{{ e.city_name }}</div>
+            <div style="font-size:18px;font-weight:bold;color:#1a1a1a;margin-bottom:4px;">{{ e.title }}</div>
+            <div style="font-size:13px;color:#888;">{{ e.date }}{% if e.time %} в {{ e.time }}{% endif %}</div>
+        </div>
+        <div style="text-align:right;">
+            {% if e.price %}
+            <div style="font-size:20px;color:#7c3aed;font-weight:bold;margin-bottom:8px;">{{ "%.0f"|format(e.price) }} ₽</div>
+            {% endif %}
+            <span style="background:{% if e.status == 'открыта запись' %}#d4edda{% elif e.status == 'мест нет' %}#fde{% else %}#f5f5f5{% endif %};color:{% if e.status == 'открыта запись' %}#155724{% elif e.status == 'мест нет' %}#c0392b{% else %}#888{% endif %};padding:4px 12px;border-radius:20px;font-size:12px;">{{ e.status }}</span>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div style="text-align:center;padding:60px;color:#aaa;">
+    <div style="font-size:48px;margin-bottom:16px;">📅</div>
+    <div>Мероприятий пока нет</div>
+</div>
+{% endif %}
+
+{% endblock %}

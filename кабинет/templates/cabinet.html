@@ -1,0 +1,73 @@
+{% extends '_base.html' %}
+{% block title %}Кабинет — IWS{% endblock %}
+{% block content %}
+
+<div style="display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:start;">
+
+    <!-- Боковое меню -->
+    <div>
+        <!-- Карточка профиля -->
+        <div style="background:#fff;border-radius:16px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.07);text-align:center;margin-bottom:12px;">
+            <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#2d1254,#7c3aed);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;font-weight:bold;">
+                {{ user.name[0]|upper if user.name else '?' }}
+            </div>
+            <div style="font-size:16px;font-weight:bold;margin-bottom:4px;">{{ user.name }}</div>
+            <div style="font-size:12px;color:#888;margin-bottom:8px;">{{ user.email }}</div>
+            <div style="display:inline-block;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:bold;color:#fff;background:{{ role_color(user.role) }};">
+                {{ role_name(user.role) }}
+            </div>
+            <div style="margin-top:10px;font-size:12px;color:#aaa;">Опыт: {{ user.experience or 0 }} XP</div>
+        </div>
+
+        <!-- Навигация -->
+        <div style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.07);">
+            <a href="/cabinet" style="display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;text-decoration:none;color:#1a1a1a;border-bottom:1px solid #f5f5f5;background:#f3e8ff;font-weight:bold;">
+                <span>🛍️</span> Мои заказы
+            </a>
+            <a href="/cabinet/messages" style="display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;text-decoration:none;color:#1a1a1a;border-bottom:1px solid #f5f5f5;justify-content:space-between;">
+                <span style="display:flex;align-items:center;gap:10px;"><span>💬</span> Сообщения</span>
+                {% if unread_count > 0 %}<span style="background:#7c3aed;color:#fff;border-radius:20px;padding:2px 8px;font-size:11px;font-weight:bold;">{{ unread_count }}</span>{% endif %}
+            </a>
+            <a href="/community" style="display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;text-decoration:none;color:#1a1a1a;border-bottom:1px solid #f5f5f5;">
+                <span>📰</span> Лента
+            </a>
+            <a href="/profile/{{ user.id }}" style="display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;text-decoration:none;color:#1a1a1a;border-bottom:1px solid #f5f5f5;">
+                <span>👤</span> Мой профиль
+            </a>
+            <a href="/cabinet/profile" style="display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;text-decoration:none;color:#1a1a1a;border-bottom:1px solid #f5f5f5;">
+                <span>⚙️</span> Настройки
+            </a>
+            <a href="/logout" style="display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;text-decoration:none;color:#aaa;">
+                <span>🚪</span> Выйти
+            </a>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div>
+        <h1 style="font-size:24px;font-weight:bold;margin-bottom:24px;">Мои <span style="color:#7c3aed;">заказы</span></h1>
+
+        {% if orders %}
+        <div style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.07);">
+            {% for o in orders %}
+            <div style="padding:16px 20px;border-bottom:1px solid #f5f5f5;display:flex;justify-content:space-between;align-items:center;font-size:14px;">
+                <div>
+                    <div style="font-weight:bold;">Заказ #{{ o.id }}</div>
+                    <div style="font-size:12px;color:#aaa;margin-top:2px;">{{ o.created_at[:10] }}</div>
+                </div>
+                <div style="font-size:18px;color:#7c3aed;font-weight:bold;">{{ "%.0f"|format(o.total) }} ₽</div>
+                <span style="background:#f3e8ff;color:#7c3aed;padding:4px 12px;border-radius:20px;font-size:12px;">{{ o.status }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align:center;padding:60px;color:#aaa;background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.07);">
+            <div style="font-size:48px;margin-bottom:16px;">📦</div>
+            <div style="margin-bottom:20px;">Заказов пока нет</div>
+            <a href="/shop" class="btn btn-primary">Перейти в магазин</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends '_base.html' %}
+{% block title %}{{ book.title }} — Издательство IWS{% endblock %}
+{% set active_page = 'publishing' %}
+{% block content %}
+
+<a href="/publishing" style="font-size:13px;color:#7c3aed;text-decoration:none;display:inline-block;margin-bottom:24px;">← Издательство</a>
+
+<div style="display:grid;grid-template-columns:320px 1fr;gap:48px;align-items:start;">
+    <div>
+        {% if book.cover %}
+        <img src="/static/images/{{ book.cover }}" style="width:100%;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.15);">
+        {% else %}
+        <div style="width:100%;height:420px;background:linear-gradient(135deg,#2d1254,#7c3aed);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:80px;">📖</div>
+        {% endif %}
+    </div>
+    <div>
+        <h1 style="font-size:30px;font-weight:bold;margin-bottom:8px;">{{ book.title }}</h1>
+        {% if book.author %}<div style="font-size:16px;color:#7c3aed;margin-bottom:20px;">{{ book.author }}</div>{% endif %}
+
+        {% if book.description %}
+        <p style="font-size:15px;line-height:1.8;color:#444;margin-bottom:28px;">{{ book.description }}</p>
+        {% endif %}
+
+        <div style="font-size:13px;color:#888;margin-bottom:24px;">
+            {% if book.pages %}<span style="margin-right:16px;">📄 {{ book.pages }} страниц</span>{% endif %}
+            {% if book.year %}<span>📅 {{ book.year }}</span>{% endif %}
+        </div>
+
+        {% if book.product_id %}
+        <a href="/shop/{{ book.product_id }}" class="btn btn-primary">Купить в магазине</a>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

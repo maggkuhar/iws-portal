@@ -1,0 +1,66 @@
+{% extends '_base.html' %}
+{% block title %}IWS — Interview with Subconscious{% endblock %}
+{% block content %}
+
+<!-- Герой -->
+<div style="text-align:center;padding:60px 0 48px;background:linear-gradient(135deg,#1a0a2e 0%,#2d1254 100%);margin:-40px -24px 48px;color:#fff;">
+    <div style="font-size:13px;letter-spacing:4px;text-transform:uppercase;color:#c084fc;margin-bottom:16px;">Метод самопознания</div>
+    <h1 style="font-size:48px;font-weight:bold;margin-bottom:16px;line-height:1.2;">Interview with<br><span style="color:#c084fc;">Subconscious</span></h1>
+    <p style="font-size:18px;color:#ccc;max-width:520px;margin:0 auto 32px;line-height:1.6;">Познай себя через диалог с подсознанием. Дневники, игры, мероприятия и сообщество единомышленников.</p>
+    <div style="display:flex;gap:16px;justify-content:center;">
+        <a href="/shop" class="btn btn-primary">Перейти в магазин</a>
+        <a href="/about" class="btn btn-outline" style="border-color:#c084fc;color:#c084fc;">О методе</a>
+    </div>
+</div>
+
+<!-- Товары -->
+{% if products %}
+<h2 style="font-size:24px;font-weight:bold;margin-bottom:24px;">Популярные <span style="color:#7c3aed;">продукты</span></h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;margin-bottom:48px;">
+    {% for p in products %}
+    <div style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.07);transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform=''">
+        <a href="/shop/{{ p.slug }}" style="text-decoration:none;color:inherit;">
+            {% if p.image %}
+            <img src="/static/images/{{ p.image }}" style="width:100%;height:200px;object-fit:cover;">
+            {% else %}
+            <div style="height:200px;background:linear-gradient(135deg,#2d1254,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:48px;">📔</div>
+            {% endif %}
+            <div style="padding:16px;">
+                <div style="font-size:15px;font-weight:bold;margin-bottom:4px;">{{ p.name }}</div>
+                <div style="font-size:18px;color:#7c3aed;font-weight:bold;">{{ "%.0f"|format(p.price) }} ₽</div>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+<div style="text-align:center;margin-bottom:48px;">
+    <a href="/shop" class="btn btn-outline">Весь каталог</a>
+</div>
+{% endif %}
+
+<!-- Мероприятия -->
+{% if events %}
+<h2 style="font-size:24px;font-weight:bold;margin-bottom:24px;">Ближайшие <span style="color:#7c3aed;">мероприятия</span></h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;margin-bottom:48px;">
+    {% for e in events %}
+    <a href="/events/{{ e.id }}" style="text-decoration:none;display:block;background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.07);">
+        <div style="font-size:12px;color:#c084fc;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">{{ e.city_name }}</div>
+        <div style="font-size:16px;font-weight:bold;color:#1a1a1a;margin-bottom:8px;">{{ e.title }}</div>
+        <div style="font-size:13px;color:#888;">{{ e.date }}</div>
+        {% if e.price %}<div style="margin-top:10px;font-size:16px;color:#7c3aed;font-weight:bold;">{{ "%.0f"|format(e.price) }} ₽</div>{% endif %}
+    </a>
+    {% endfor %}
+</div>
+<div style="text-align:center;">
+    <a href="/events" class="btn btn-outline">Все мероприятия</a>
+</div>
+{% endif %}
+
+<!-- О проекте -->
+<div style="background:#f3e8ff;border-radius:16px;padding:40px;text-align:center;margin-top:48px;">
+    <h2 style="font-size:26px;font-weight:bold;margin-bottom:16px;">Что такое <span style="color:#7c3aed;">IWS?</span></h2>
+    <p style="font-size:16px;color:#444;max-width:600px;margin:0 auto 24px;line-height:1.7;">Метод "Интервью с подсознанием" — это уникальная система вопросов и упражнений, которая помогает раскрыть внутренние ресурсы, разобраться в себе и найти свой путь.</p>
+    <a href="/about" class="btn btn-primary">Узнать больше</a>
+</div>
+
+{% endblock %}

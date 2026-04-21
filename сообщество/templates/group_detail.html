@@ -1,0 +1,47 @@
+{% extends '_base.html' %}
+{% block title %}{{ group.name }} — IWS{% endblock %}
+{% set active_page = 'groups' %}
+{% block content %}
+
+<a href="/groups" style="font-size:13px;color:#7c3aed;text-decoration:none;display:inline-block;margin-bottom:24px;">← Все группы</a>
+
+<div style="display:grid;grid-template-columns:1fr 300px;gap:32px;align-items:start;">
+    <div>
+        <h1 style="font-size:28px;font-weight:bold;margin-bottom:8px;">{{ group.name }}</h1>
+        {% if group.description %}<p style="color:#666;font-size:15px;margin-bottom:24px;line-height:1.6;">{{ group.description }}</p>{% endif %}
+
+        <div style="background:#f3e8ff;border-radius:12px;padding:20px;text-align:center;color:#7c3aed;">
+            <div style="font-size:14px;">Чат и лента группы — в разработке</div>
+            <div style="font-size:12px;color:#aaa;margin-top:4px;">Скоро здесь появятся посты и общение</div>
+        </div>
+    </div>
+
+    <div>
+        <div style="background:#fff;border-radius:16px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.07);margin-bottom:16px;">
+            <div style="font-size:13px;font-weight:bold;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">Участники ({{ members|length }})</div>
+            {% for m in members %}
+            <a href="/profile/{{ m.id }}" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;margin-bottom:12px;">
+                <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2d1254,#7c3aed);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:14px;">
+                    {{ m.name[0]|upper if m.name else '?' }}
+                </div>
+                <div>
+                    <div style="font-size:14px;font-weight:bold;">{{ m.name }}</div>
+                    <div style="font-size:11px;color:{{ role_color(m.role) }};">{{ role_name(m.role) }}</div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        {% if user %}
+        <form method="post" action="/groups/{{ group.id }}/join">
+            <button type="submit" class="btn {% if is_member %}btn-outline{% else %}btn-primary{% endif %}" style="width:100%;">
+                {% if is_member %}Покинуть группу{% else %}Вступить в группу{% endif %}
+            </button>
+        </form>
+        {% else %}
+        <a href="/login" class="btn btn-primary" style="width:100%;text-align:center;display:block;">Войти чтобы вступить</a>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

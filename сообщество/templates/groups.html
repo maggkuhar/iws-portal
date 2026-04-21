@@ -1,0 +1,39 @@
+{% extends '_base.html' %}
+{% block title %}Группы — IWS{% endblock %}
+{% set active_page = 'groups' %}
+{% block content %}
+
+<h1 style="font-size:30px;font-weight:bold;margin-bottom:8px;">Группы <span style="color:#7c3aed;">сообщества</span></h1>
+<p style="color:#888;margin-bottom:32px;">Присоединяйся к единомышленникам по интересам</p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;">
+    {% for g in groups %}
+    {% set accessible = user and user.role >= g.min_role %}
+    <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.07);opacity:{% if not user or accessible %}1{% else %}0.6{% endif %};">
+        <div style="height:8px;background:{% if accessible %}linear-gradient(90deg,#7c3aed,#c084fc){% else %}#e5e7eb{% endif %};"></div>
+        <div style="padding:24px;">
+            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+                <div style="font-size:18px;font-weight:bold;">{{ g.name }}</div>
+                {% if g.min_role > 1 %}
+                <span style="font-size:11px;background:#f3e8ff;color:#7c3aed;padding:3px 10px;border-radius:20px;">{{ role_name(g.min_role) }}+</span>
+                {% endif %}
+            </div>
+            {% if g.description %}<div style="font-size:13px;color:#666;margin-bottom:16px;line-height:1.5;">{{ g.description }}</div>{% endif %}
+            <div style="font-size:12px;color:#aaa;margin-bottom:16px;">👥 {{ g.members_count }} участников</div>
+            {% if accessible %}
+                {% if g.id in my_groups %}
+                <a href="/groups/{{ g.id }}" class="btn btn-outline btn-sm" style="width:100%;text-align:center;">Открыть</a>
+                {% else %}
+                <a href="/groups/{{ g.id }}" class="btn btn-primary btn-sm" style="width:100%;text-align:center;">Вступить</a>
+                {% endif %}
+            {% elif not user %}
+                <a href="/login" class="btn btn-outline btn-sm" style="width:100%;text-align:center;">Войти</a>
+            {% else %}
+                <div style="font-size:12px;color:#aaa;text-align:center;">Требуется: {{ role_name(g.min_role) }}</div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
